@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobres - Óptica Optalvis</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- jQuery UI CSS para autocompletado -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="logo">
+            <h3>Óptica Optalvis</h3>
+        </div>
+        <h3>Registro de Sobres</h3>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="#">Inicio</a></li>
+                <li><a href="#">Productos</a></li>
+                <li><a href="#">Servicios</a></li>
+                <li><a href="#">Contactos</a></li>
+                <li><a href="/importar">Importar Datos</a></li>
+                <li><a href="/estadisticas">Estadísticas</a></li>
+                <li><a href="/recetas">Registrar Receta</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="contenedor">
+        <!-- Toast para mensajes de error -->
+        <div class="toast-container position-fixed top-0 end-0 p-3">
+            <div id="errorToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <strong class="me-auto">Error</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body" id="errorToastBody"></div>
+            </div>
+        </div>
+
+        <form id="registroSobresForm" method="POST" action="/registrar" enctype="application/x-www-form-urlencoded">
+            <div class="section-box">
+                <div class="field-group">
+                    <label for="numeroSobre">Número de sobre:</label>
+                    <input type="text" class="form-control" id="numeroSobre" name="numero_sobre" required>
+                </div>
+                <div class="field-group">
+                    <label for="numeroPedido">Número de Pedido:</label>
+                    <input type="text" class="form-control" id="numeroPedido" name="numero_pedido">
+                </div>
+            </div>
+            <div class="section-box">
+                <div class="field-group wide">
+                    <label for="cliente">Cliente:</label>
+                    <input type="text" class="form-control" id="cliente" name="cliente">
+                </div>
+                <div class="field-group">
+                    <label for="fechaCancelacion">Fecha Cancelación:</label>
+                    <input type="date" class="form-control" id="fechaCancelacion" name="fecha_cancelacion">
+                </div>
+                <div class="field-group">
+                    <label for="tienda">Tienda:</label>
+                    <input type="text" class="form-control" id="tienda" name="tienda" value="" autocomplete="off">
+                </div>
+                <div class="field-group">
+                    <label for="proveedor">Proveedor:</label>
+                    <input type="text" class="form-control" id="proveedor" name="proveedor" value="" autocomplete="off">
+                </div>
+            </div>
+            <div class="section-box">
+                <div class="field-group wide">
+                    <label for="modelo">Modelo / Descripción:</label>
+                    <input type="text" class="form-control" id="modelo" name="modelo">
+                </div>
+                <div class="field-group wide">
+                    <label for="armazon">Armazón:</label>
+                    <input type="text" class="form-control" id="armazon" name="armazon">
+                </div>
+            </div>
+            <div class="section-box">
+                <div class="field-group">
+                    <label for="doctor">Doctor:</label>
+                    <input type="text" class="form-control" id="doctor" name="doctor" value="" autocomplete="off">
+                </div>
+                <div class="field-group">
+                    <label for="montoTotal">Monto Total:</label>
+                    <input type="number" step="0.01" class="form-control" id="montoTotal" name="monto_total">
+                </div>
+                <div class="field-group">
+                    <label for="montoCuenta">Monto a Cuenta:</label>
+                    <input type="number" step="0.01" class="form-control" id="montoCuenta" name="monto_cuenta">
+                </div>
+                <div class="field-group">
+                    <label for="saldo">Saldo:</label>
+                    <input type="number" step="0.01" class="form-control" id="saldo" name="saldo">
+                </div>
+                <div class="field-group">
+                    <label for="estadoPago">Estado de Pago:</label>
+                    <input type="text" class="form-control" id="estadoPago" name="estado_pago" value="" autocomplete="off">
+                </div>
+            </div>
+            <div class="buttons-section">
+                <button type="submit" class="btn btn-success btn-registrar">REGISTRAR</button>
+                <div class="btn-group">
+                    <a href="/registros" class="btn btn-warning">VER REGISTROS</a>
+                    <a href="/buscar" class="btn btn-warning">BUSCAR REGISTRO</a>
+                </div>
+            </div>
+        </form>
+
+        <!-- Modal de Bootstrap -->
+        <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="successModalLabel">¡Éxito!</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Sobre registrado exitosamente.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" id="modalAccept" data-bs-dismiss="modal">Aceptar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery y jQuery UI para autocompletado -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <!-- Bootstrap JS y Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Configurar autocompletado para el campo doctor
+            $("#doctor").autocomplete({
+                source: async function(request, response) {
+                    try {
+                        const res = await fetch(`/api/doctores?query=${request.term}`);
+                        const data = await res.json();
+                        response(data);
+                    } catch (error) {
+                        console.error("Error al obtener doctores:", error);
+                        response([]);
+                    }
+                },
+                minLength: 1
+            });
+
+            // Configurar autocompletado para el campo tienda
+            $("#tienda").autocomplete({
+                source: async function(request, response) {
+                    try {
+                        const res = await fetch(`/api/tiendas?query=${request.term}`);
+                        const data = await res.json();
+                        response(data);
+                    } catch (error) {
+                        console.error("Error al obtener tiendas:", error);
+                        response([]);
+                    }
+                },
+                minLength: 1
+            });
+
+            // Configurar autocompletado para el campo proveedor
+            $("#proveedor").autocomplete({
+                source: async function(request, response) {
+                    try {
+                        const res = await fetch(`/api/proveedores?query=${request.term}`);
+                        const data = await res.json();
+                        response(data);
+                    } catch (error) {
+                        console.error("Error al obtener proveedores:", error);
+                        response([]);
+                    }
+                },
+                minLength: 1
+            });
+
+            // Configurar autocompletado para el campo estado_pago
+            $("#estadoPago").autocomplete({
+                source: async function(request, response) {
+                    try {
+                        const res = await fetch(`/api/estados_pago?query=${request.term}`);
+                        const data = await res.json();
+                        response(data);
+                    } catch (error) {
+                        console.error("Error al obtener estados_pago:", error);
+                        response([]);
+                    }
+                },
+                minLength: 1
+            });
+        });
+
+        document.getElementById("registroSobresForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            const form = this;
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch("/registrar", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.message === "Sobre registrado exitosamente") {
+                    const modal = new bootstrap.Modal(document.getElementById("successModal"));
+                    modal.show();
+                    document.getElementById("modalAccept").addEventListener("click", function() {
+                        form.reset();
+                    });
+                } else {
+                    // Mostrar el error en un toast
+                    const toast = new bootstrap.Toast(document.getElementById("errorToast"));
+                    document.getElementById("errorToastBody").textContent = result.detail || "Error desconocido";
+                    toast.show();
+                }
+            } catch (error) {
+                const toast = new bootstrap.Toast(document.getElementById("errorToast"));
+                document.getElementById("errorToastBody").textContent = "Error en la solicitud: " + error.message;
+                toast.show();
+            }
+        });
+    </script>
+</body>
+</html>

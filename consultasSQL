@@ -1,0 +1,173 @@
+----------------------------------------------------------------------
+-- Crear base de datos sobres_db
+CREATE DATABASE sobres_db;
+
+use sobres_db;
+
+-- Crear tabla tiendas
+CREATE TABLE tiendas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL UNIQUE
+);
+
+-- Insertar datos iniciales en tiendas
+INSERT INTO tiendas (nombre) VALUES
+('CENTRAL'),
+('SUCURSAL');
+
+-- Crear tabla proveedores
+CREATE TABLE proveedores (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL UNIQUE
+);
+
+-- Insertar datos iniciales en proveedores
+INSERT INTO proveedores (nombre) VALUES
+('ESSILOR'),
+('LISTOS'),
+('PREMIER'),
+('OPTALVISION');
+
+-- Crear tabla estados_pago
+CREATE TABLE estados_pago (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(255) NOT NULL UNIQUE
+);
+
+-- Insertar datos iniciales en estados_pago
+INSERT INTO estados_pago (nombre) VALUES
+('CANCELADO'),
+('PENDIENTE');
+
+----------------------------------------------------------------------
+use sobres_db;
+CREATE TABLE recetas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    numero_receta VARCHAR(50) NOT NULL UNIQUE,
+    nombres_cliente VARCHAR(100) NOT NULL,
+    apellido_paterno VARCHAR(50) NOT NULL,
+    apellido_materno VARCHAR(50) NOT NULL,
+    telefono_direccion VARCHAR(255) NOT NULL,
+    fecha_receta DATE NOT NULL,
+    doctor_receta VARCHAR(100),
+    tienda_optica VARCHAR(100),
+    procedencia_cliente VARCHAR(100),
+    esf_lejos_od VARCHAR(20),
+    cil_lejos_od VARCHAR(20),
+    eje_lejos_od VARCHAR(20),
+    base_lejos_od VARCHAR(20),
+    esf_lejos_oi VARCHAR(20),
+    cil_lejos_oi VARCHAR(20),
+    eje_lejos_oi VARCHAR(20),
+    base_lejos_oi VARCHAR(20),
+    esf_cerca_od VARCHAR(20),
+    cil_cerca_od VARCHAR(20),
+    eje_cerca_od VARCHAR(20),
+    base_cerca_od VARCHAR(20),
+    esf_cerca_oi VARCHAR(20),
+    cil_cerca_oi VARCHAR(20),
+    eje_cerca_oi VARCHAR(20),
+    base_cerca_oi VARCHAR(20),
+    material_cristal_01 VARCHAR(100),
+    material_cristal_02 VARCHAR(100),
+    proveedor_optica VARCHAR(100),
+    armador_optica VARCHAR(100),
+    altura_lente VARCHAR(20) NOT NULL,
+    armazon_lente VARCHAR(100),
+    numero_sobre VARCHAR(50),
+    fecha_entrega DATE NOT NULL,
+    numero_pedido VARCHAR(50) NOT NULL,
+    --FOREIGN KEY (doctor_receta) REFERENCES doctores(nombre) ON DELETE SET NULL,
+    --FOREIGN KEY (tienda_optica) REFERENCES tiendas(nombre) ON DELETE SET NULL,
+    --FOREIGN KEY (proveedor_optica) REFERENCES proveedores(nombre) ON DELETE SET NULL,
+    --FOREIGN KEY (numero_sobre) REFERENCES sobres(numero_sobre) ON DELETE SET NULL
+);
+----------------------------------------------------------------------
+use sobres_db;
+create table recetas (
+id int auto_increment primary key,
+numero_receta varchar(50) not null,
+nombres_cliente varchar(100) not null,
+apellido_paterno varchar(50),
+apellido_materno varchar(50),
+telefono_direccion varchar(100),
+fecha_receta date,
+doctor_receta varchar(100),
+tienda_optica varchar(50),
+procedencia_cliente varchar(50),
+esf_lejos_od varchar(50),
+cil_lejos_od varchar(50),
+eje_lejos_od varchar(50),
+esf_lejos_oi varchar(50),
+cil_lejos_oi varchar(50),
+eje_lejos_oi varchar(50),
+esf_cerca_od varchar(50),
+cil_cerca_od varchar(50),
+eje_cerca_od varchar(50),
+esf_cerca_oi varchar(50),
+cil_cerca_oi varchar(50),
+eje_cerca_oi varchar(50),
+dip_lejos varchar(50),
+dip_cerca varchar(50),
+dip_od varchar(50),
+dip_oi varchar(50),
+base_lente varchar(50),
+material_cristal_01 varchar(150),
+material_cristal_02 varchar(150),
+proveedor_optica varchar(100),
+armador_optica varchar(50),
+altura_lente varchar(50),
+armazon_lente varchar(150),
+numero_sobre varchar(50),
+fecha_entrega date,
+numero_pedido varchar(50));
+
+----------------------------------------------------------------------
+CREATE TABLE armazones (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL UNIQUE
+);
+----------------------------------------------------------------------
+USE sobres_db;
+
+CREATE TABLE procedencias (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL UNIQUE
+);
+
+INSERT INTO procedencias (nombre) VALUES
+('LA PAZ'),
+('COCHABAMBA'),
+('SANTA CRUZ'),
+('PANDO'),
+('BENI'),
+('ORURO'),
+('POTOSI'),
+('TARIJA'),
+('CHUQUISACA');
+
+----------------------------------------------------------------------
+use sobres_db;
+describe recetas
+----------------------------------------------------------------------
+ALTER TABLE recetas
+    DROP FOREIGN KEY recetas_ibfk_1,  -- Para doctor_receta
+    DROP FOREIGN KEY recetas_ibfk_2,  -- Para tienda_optica
+    DROP FOREIGN KEY recetas_ibfk_3,  -- Para proveedor_optica
+    DROP FOREIGN KEY recetas_ibfk_4;  -- Para numero_sobre
+
+----------------------------------------------------------------------
+CREATE TABLE armadores (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL UNIQUE
+);
+----------------------------------------------------------------------
+insert into armadores (nombre) values
+('JAIME'),
+('PORFIRIO');
+----------------------------------------------------------------------
+CREATE TABLE cristales (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL UNIQUE
+);
+----------------------------------------------------------------------

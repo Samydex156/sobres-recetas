@@ -1,0 +1,44 @@
+INICIAR SERVIDOR EN FASTAPI
+uvicorn main:app --reload
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+CREAR / ACTIVAR / DESACTIVAR ENTORNO VIRTUAL EN WINDOWS:
+python -m venv venv
+.\venv\Scripts\Activate
+.\venv\Scripts\Deactivate
+
+CREAR / ACTIVAR / DESACTIVAR ENTORNO VIRTUAL EN LINUX UBUNTU:
+python3 -m venv venv
+source venv/bin/activate
+source venv/bin/deactivate
+
+GENERAR ARCHIVO DE DEPENDENCIAS:
+pip freeze > requirements.txt
+
+INSTALAR DEPENDENCIAS EN OTRO ENTORNO:
+pip install -r requirements.txt
+
+ELIMINAR ENTORNO VIRTUAL:
+Solo eliminar la carpeta venv
+
+AGREGAR POSTGRESQL AL PATH DE WINDOWS:
+set PATH=%PATH%;C:\Program Files\PostgreSQL\16\bin
+
+PROBAR LA CONEXIÓN A POSTGRESQL: (CMD)
+psql -U postgres
+
+CREAR LA BASE DE DATOS:
+createdb -U postgres sobres_db
+
+CONECTARSE A LA BASE DE DATOS:
+psql -U postgres -d sobres_db
+
+EJECUTAR LA CREACIÓN DE TABLAS:
+psql -U postgres -d sobres_db -f create_tables.sql
+
+VERIFICA LA EJECUCIÓN:
+psql -U postgres -d sobres_db
+\dt
+
+INSTALAR PSYCO
+pip install psycopg2-binary o pip install psycopg2

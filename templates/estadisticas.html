@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estadísticas - Óptica Optalvis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <header class="main-header">
+        <div class="logo">
+            <h3>Óptica Optalvis</h3>
+        </div>
+        <h3>Estadísticas de Sobres</h3>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="/">Registrar Nuevo</a></li>
+                <li><a href="/registros">Ver Registros</a></li>
+                <li><a href="/importar">Importar Datos</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="contenedor">
+        <!-- Estadísticas numéricas -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Total de Sobres</h5>
+                        <p class="card-text" id="totalSobres">0</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Monto Total</h5>
+                        <p class="card-text" id="montoTotal">$0.00</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Monto a Cuenta</h5>
+                        <p class="card-text" id="montoCuenta">$0.00</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Saldo Acumulado</h5>
+                        <p class="card-text" id="saldoAcumulado">$0.00</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráficos -->
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <h5>Distribución por Estado de Pago</h5>
+                <canvas id="estadoPagoChart"></canvas>
+            </div>
+            <div class="col-md-6 mb-4">
+                <h5>Distribución por Tienda</h5>
+                <canvas id="tiendaChart"></canvas>
+            </div>
+            <div class="col-md-6 mb-4">
+                <h5>Distribución por Proveedor</h5>
+                <canvas id="proveedorChart"></canvas>
+            </div>
+            <div class="col-md-6 mb-4">
+                <h5>Evolución Temporal</h5>
+                <canvas id="evolucionChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+    <script>
+        async function cargarEstadisticas() {
+            try {
+                const response = await fetch("/api/estadisticas");
+                const data = await response.json();
+
+                // Actualizar estadísticas numéricas
+                document.getElementById("totalSobres").textContent = data.total_sobres;
+                document.getElementById("montoTotal").textContent = `$${data.monto_total_acumulado.toFixed(2)}`;
+                document.getElementById("montoCuenta").textContent = `$${data.monto_cuenta_acumulado.toFixed(2)}`;
+                document.getElementById("saldoAcumulado").textContent = `$${data.saldo_acumulado.toFixed(2)}`;
+
+                // Gráfico: Distribución por estado de pago (gráfico de pastel)
+                new Chart(document.getElementById("estadoPagoChart"), {
+                    type: 'pie',
+                    data: {
+                        labels: Object.keys(data.estado_pago_stats),
+                        datasets: [{
+                            label: 'Registros por Estado de Pago',
+                            data: Object.values(data.estado_pago_stats),
+                            backgroundColor: ['#36A2EB', '#FF6384']
+                        }]
+                    },
+                    options: {
+                        responsive: true
+                    }
+                });
+
+                // Gráfico: Distribución por tienda (gráfico de pastel)
+                new Chart(document.getElementById("tiendaChart"), {
+                    type: 'pie',
+                    data: {
+                        labels: Object.keys(data.tienda_stats),
+                        datasets: [{
+                            label: 'Registros por Tienda',
+                            data: Object.values(data.tienda_stats),
+                            backgroundColor: ['#FFCE56', '#4BC0C0']
+                        }]
+                    },
+                    options: {
+                        responsive: true
+                    }
+                });
+
+                // Gráfico: Distribución por proveedor (gráfico de barras)
+                new Chart(document.getElementById("proveedorChart"), {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(data.proveedor_stats),
+                        datasets: [{
+                            label: 'Registros por Proveedor',
+                            data: Object.values(data.proveedor_stats),
+                            backgroundColor: '#9966FF'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+                // Gráfico: Evolución temporal (gráfico de líneas)
+                new Chart(document.getElementById("evolucionChart"), {
+                    type: 'line',
+                    data: {
+                        labels: data.evolucion_stats.map(item => item.mes),
+                        datasets: [{
+                            label: 'Registros por Mes',
+                            data: data.evolucion_stats.map(item => item.cantidad),
+                            borderColor: '#FF6384',
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error("Error al cargar estadísticas:", error);
+            }
+        }
+
+        // Cargar estadísticas al cargar la página
+        window.onload = cargarEstadisticas;
+    </script>
+</body>
+</html>

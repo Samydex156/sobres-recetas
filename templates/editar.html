@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Sobre - Óptica Optalvis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- jQuery UI CSS para autocompletado -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="logo">
+            <h3>Óptica Optalvis</h3>
+        </div>
+        <h3>Editar Sobre</h3>
+        <nav class="main-nav">
+            <ul>
+                <li>
+                    <a href="/registros">Volver a Registros</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <div class="contenedor">
+        <!-- Toast para mensajes de error -->
+        <div class="toast-container position-fixed top-0 end-0 p-3">
+            <div id="errorToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <strong class="me-auto">Error</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body" id="errorToastBody"></div>
+            </div>
+        </div>
+        <!-- Toast para mensaje de éxito -->
+        <div class="toast-container position-fixed top-0 end-0 p-3">
+            <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <strong class="me-auto">Éxito</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body" id="successToastBody"></div>
+            </div>
+        </div>
+
+        <form id="editarSobreForm" method="POST" action="/actualizar/{{ registro.id|default('0') }}" enctype="application/x-www-form-urlencoded" data-sobre-id="{{ registro.id|default('0') }}">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="numeroSobre" class="form-label">Número de sobre:</label>
+                    <input type="text" class="form-control" id="numeroSobre" name="numero_sobre" value="{{ registro.numero_sobre|default('') }}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="numeroPedido" class="form-label">Número de Pedido:</label>
+                    <input type="text" class="form-control" id="numeroPedido" name="numero_pedido" value="{{ registro.numero_pedido|default('') }}" required>
+                </div>
+            </div>
+            <div class="section-box">
+                <div class="field-group">
+                    <label for="cliente" class="form-label">Cliente:</label>
+                    <input type="text" class="form-control" id="cliente" name="cliente" value="{{ registro.cliente|default('') }}">
+                </div>
+                <div class="field-group">
+                    <label for="fechaCancelacion" class="form-label">Fecha Cancelación:</label>
+                    <input type="date" class="form-control" id="fechaCancelacion" name="fecha_cancelacion" value="{{ registro.fecha_cancelacion|default('') }}">
+                </div>
+                <div class="field-group">
+                    <label for="tienda" class="form-label">Tienda:</label>
+                    <input type="text" class="form-control" id="tienda" name="tienda" value="{{ registro.tienda|default('') }}" autocomplete="off">
+                </div>
+                <div class="field-group">
+                    <label for="proveedor" class="form-label">Proveedor:</label>
+                    <input type="text" class="form-control" id="proveedor" name="proveedor" value="{{ registro.proveedor|default('') }}" autocomplete="off">
+                </div>
+            </div>
+            <div class="section-box">
+                <div class="field-group">
+                    <label for="modelo" class="form-label">Modelo / Descripción:</label>
+                    <input type="text" class="form-control" id="modelo" name="modelo" value="{{ registro.modelo|default('') }}">
+                </div>
+                <div class="field-group">
+                    <label for="armazon" class="form-label">Armazón:</label>
+                    <input type="text" class="form-control" id="armazon" name="armazon" value="{{ registro.armazon|default('') }}">
+                </div>
+            </div>
+            <div class="section-box">
+                <div class="field-group">
+                    <label for="doctor" class="form-label">Doctor:</label>
+                    <input type="text" class="form-control" id="doctor" name="doctor" value="{{ registro.doctor|default('') }}" autocomplete="off">
+                </div>
+                <div class="field-group">
+                    <label for="montoTotal" class="form-label">Monto Total:</label>
+                    <input type="number" step="0.01" class="form-control" id="montoTotal" name="monto_total" value="{{ registro.monto_total|default('0.0') }}" required>
+                </div>
+                <div class="field-group">
+                    <label for="montoCuenta" class="form-label">Monto a Cuenta:</label>
+                    <input type="number" step="0.01" class="form-control" id="montoCuenta" name="monto_cuenta" value="{{ registro.monto_cuenta|default('0.0') }}" required>
+                </div>
+                <div class="field-group">
+                    <label for="saldo" class="form-label">Saldo:</label>
+                    <input type="number" step="0.01" class="form-control" id="saldo" name="saldo" value="{{ registro.saldo|default('0.0') }}">
+                </div>
+                <div class="field-group">
+                    <label for="estadoPago" class="form-label">Estado de Pago:</label>
+                    <input type="text" class="form-control" id="estadoPago" name="estado_pago" value="{{ registro.estado_pago|default('') }}" autocomplete="off">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-success" id="confirmarBtn">Confirmar</button>
+            <a href="/registros" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+
+    <!-- jQuery y jQuery UI para autocompletado -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <!-- Bootstrap JS y Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Configurar autocompletado para el campo doctor
+            $("#doctor").autocomplete({
+                source: async function(request, response) {
+                    try {
+                        const res = await fetch(`/api/doctores?query=${request.term}`);
+                        const data = await res.json();
+                        response(data);
+                    } catch (error) {
+                        console.error("Error al obtener doctores:", error);
+                        response([]);
+                    }
+                },
+                minLength: 1
+            });
+
+            // Configurar autocompletado para el campo tienda
+            $("#tienda").autocomplete({
+                source: async function(request, response) {
+                    try {
+                        const res = await fetch(`/api/tiendas?query=${request.term}`);
+                        const data = await res.json();
+                        response(data);
+                    } catch (error) {
+                        console.error("Error al obtener tiendas:", error);
+                        response([]);
+                    }
+                },
+                minLength: 1
+            });
+
+            // Configurar autocompletado para el campo proveedor
+            $("#proveedor").autocomplete({
+                source: async function(request, response) {
+                    try {
+                        const res = await fetch(`/api/proveedores?query=${request.term}`);
+                        const data = await res.json();
+                        response(data);
+                    } catch (error) {
+                        console.error("Error al obtener proveedores:", error);
+                        response([]);
+                    }
+                },
+                minLength: 1
+            });
+
+            // Configurar autocompletado para el campo estado_pago
+            $("#estadoPago").autocomplete({
+                source: async function(request, response) {
+                    try {
+                        const res = await fetch(`/api/estados_pago?query=${request.term}`);
+                        const data = await res.json();
+                        response(data);
+                    } catch (error) {
+                        console.error("Error al obtener estados_pago:", error);
+                        response([]);
+                    }
+                },
+                minLength: 1
+            });
+        });
+
+        document.getElementById("editarSobreForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            const form = this;
+            const formData = new FormData(form);
+            const sobreId = form.getAttribute("data-sobre-id");
+
+            try {
+                const response = await fetch(`/actualizar/${sobreId}`, {
+                    method: "POST",
+                    body: formData
+                });
+                const result = await response.json();
+
+                if (response.ok && result.message === "Registro actualizado exitosamente") {
+                    // Mostrar el toast de éxito
+                    const toast = new bootstrap.Toast(document.getElementById("successToast"));
+                    document.getElementById("successToastBody").textContent = "Registro actualizado exitosamente";
+                    toast.show();
+
+                    // Redirigir después de cerrar el toast (esperaremos 2 segundos para que el usuario vea el mensaje)
+                    setTimeout(() => {
+                        window.location.href = "/registros";
+                    }, 2000);
+                } else {
+                    // Mostrar el error en un toast
+                    const toast = new bootstrap.Toast(document.getElementById("errorToast"));
+                    document.getElementById("errorToastBody").textContent = result.detail || "Error desconocido";
+                    toast.show();
+                }
+            } catch (error) {
+                const toast = new bootstrap.Toast(document.getElementById("errorToast"));
+                document.getElementById("errorToastBody").textContent = "Error en la solicitud: " + error.message;
+                toast.show();
+            }
+        });
+    </script>
+</body>
+</html>

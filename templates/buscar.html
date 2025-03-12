@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Sobres - Óptica Optalvis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles_receta.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="logo">
+            <h3>Óptica Optalvis</h3>
+        </div>
+        <h3>Buscar Sobres</h3>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="/">Registrar Nuevo</a></li>
+                <li><a href="/registros">Ver Registros</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="contenedor">
+        <fieldset>
+            <div>
+                <label for="numeroSobre" class="form-label">Número de Sobre:</label>
+                <input type="text" class="form-control" id="numeroSobre">
+            </div>
+            <div>
+                <label for="numeroPedido" class="form-label">Número de Pedido:</label>
+                <input type="text" class="form-control" id="numeroPedido">
+            </div>
+            <div>
+                <label for="cliente" class="form-label">Cliente:</label>
+                <input type="text" class="form-control" id="cliente">
+            </div>
+            <div>
+                <label for="fechaInicio" class="form-label">Desde:</label>
+                <input type="date" class="form-control" id="fechaInicio">
+            </div>
+            <div>
+                <label for="fechaFin" class="form-label">Hasta:</label>
+                <input type="date" class="form-control" id="fechaFin">
+            </div>
+        </fieldset>
+        <div class="table-container">
+            <table class="table table-striped table-hover" id="resultadosTabla">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Número Sobre</th>
+                        <th>Número Pedido</th>
+                        <th>Cliente</th>
+                        <th>Fecha Cancelación</th>
+                        <th>Tienda</th>
+                        <th>Proveedor</th>
+                        <th>Modelo</th>
+                        <th>Armazón</th>
+                        <th>Doctor</th>
+                        <th>Monto Total</th>
+                        <th>Monto Cuenta</th>
+                        <th>Saldo</th>
+                        <th>Estado Pago</th>
+                    </tr>
+                </thead>
+                <tbody id="resultadosBody">
+                    <!-- Los resultados se llenarán dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+    <script>
+
+        // Función para implementar debounce
+        function debounce(func, wait) {
+            let timeout;
+            return function (...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+        // Función para buscar y actualizar la tabla
+        async function buscarRegistros() {
+            const numeroSobre = document.getElementById("numeroSobre").value;
+            const numeroPedido = document.getElementById("numeroPedido").value;
+            const cliente = document.getElementById("cliente").value;
+            const fechaInicio = document.getElementById("fechaInicio").value;
+            const fechaFin = document.getElementById("fechaFin").value;
+
+            // Construir la URL con los parámetros de búsqueda
+            const params = new URLSearchParams();
+            if (numeroSobre) params.append("numero_sobre", numeroSobre);
+            if (numeroPedido) params.append("numero_pedido", numeroPedido);
+            if (cliente) params.append("cliente", cliente);
+            if (fechaInicio) params.append("fecha_inicio", fechaInicio);
+            if (fechaFin) params.append("fecha_fin", fechaFin);
+
+            try {
+                const response = await fetch(`/api/buscar?${params.toString()}`);
+                const registros = await response.json();
+
+                // Actualizar la tabla
+                const tbody = document.getElementById("resultadosBody");
+                tbody.innerHTML = ""; // Limpiar la tabla
+
+                registros.forEach(registro => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${registro.id}</td>
+                        <td>${registro.numero_sobre}</td>
+                        <td>${registro.numero_pedido}</td>
+                        <td>${registro.cliente || ""}</td>
+                        <td>${registro.fecha_cancelacion || ""}</td>
+                        <td>${registro.tienda}</td>
+                        <td>${registro.proveedor}</td>
+                        <td>${registro.modelo || ""}</td>
+                        <td>${registro.armazon || ""}</td>
+                        <td>${registro.doctor}</td>
+                        <td>${registro.monto_total}</td>
+                        <td>${registro.monto_cuenta}</td>
+                        <td>${registro.saldo}</td>
+                        <td>${registro.estado_pago}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error("Error al buscar registros:", error);
+            }
+        }
+
+        // Añadir eventos a los inputs para buscar mientras se escribe
+        // Añadir eventos con debounce para los campos de texto
+        const debouncedBuscarRegistros = debounce(buscarRegistros, 300);
+        document.getElementById("numeroSobre").addEventListener("input", debouncedBuscarRegistros);
+        document.getElementById("numeroPedido").addEventListener("input", debouncedBuscarRegistros);
+        document.getElementById("cliente").addEventListener("input", debouncedBuscarRegistros);
+        document.getElementById("fechaInicio").addEventListener("change", buscarRegistros);
+        document.getElementById("fechaFin").addEventListener("change", buscarRegistros);
+
+        // Ejecutar búsqueda inicial para mostrar todos los registros
+        buscarRegistros();
+    </script>
+</body>
+</html>
