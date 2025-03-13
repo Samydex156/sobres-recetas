@@ -6,12 +6,15 @@
     <title>Buscar Sobres - Óptica Optalvis</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/static/styles_receta.css">
+    <style>
+        .table-container { margin: 20px; overflow-x: auto; }
+        .table { font-size: 0.85rem; }
+        .table th, .table td { white-space: nowrap; padding: 0.5rem; }
+    </style>
 </head>
 <body>
     <header class="main-header">
-        <div class="logo">
-            <h3>Óptica Optalvis</h3>
-        </div>
+        <div class="logo"><h3>Óptica Optalvis</h3></div>
         <h3>Buscar Sobres</h3>
         <nav class="main-nav">
             <ul>
@@ -63,28 +66,22 @@
                         <th>Estado Pago</th>
                     </tr>
                 </thead>
-                <tbody id="resultadosBody">
-                    <!-- Los resultados se llenarán dinámicamente -->
-                </tbody>
+                <tbody id="resultadosBody"></tbody>
             </table>
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
     <script>
-
-        // Función para implementar debounce
         function debounce(func, wait) {
             let timeout;
             return function (...args) {
                 clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(this, args), wait);
+                timeout = setTimeout(() => func(...args), wait);
             };
         }
 
-        // Función para buscar y actualizar la tabla
         async function buscarRegistros() {
             const numeroSobre = document.getElementById("numeroSobre").value;
             const numeroPedido = document.getElementById("numeroPedido").value;
@@ -92,7 +89,6 @@
             const fechaInicio = document.getElementById("fechaInicio").value;
             const fechaFin = document.getElementById("fechaFin").value;
 
-            // Construir la URL con los parámetros de búsqueda
             const params = new URLSearchParams();
             if (numeroSobre) params.append("numero_sobre", numeroSobre);
             if (numeroPedido) params.append("numero_pedido", numeroPedido);
@@ -102,39 +98,34 @@
 
             try {
                 const response = await fetch(`/api/buscar?${params.toString()}`);
+                if (!response.ok) throw new Error("Error en la solicitud");
                 const registros = await response.json();
 
-                // Actualizar la tabla
                 const tbody = document.getElementById("resultadosBody");
-                tbody.innerHTML = ""; // Limpiar la tabla
-
-                registros.forEach(registro => {
-                    const row = document.createElement("tr");
-                    row.innerHTML = `
+                tbody.innerHTML = registros.length ? registros.map(registro => `
+                    <tr>
                         <td>${registro.id}</td>
-                        <td>${registro.numero_sobre}</td>
-                        <td>${registro.numero_pedido}</td>
-                        <td>${registro.cliente || ""}</td>
-                        <td>${registro.fecha_cancelacion || ""}</td>
-                        <td>${registro.tienda}</td>
-                        <td>${registro.proveedor}</td>
-                        <td>${registro.modelo || ""}</td>
-                        <td>${registro.armazon || ""}</td>
-                        <td>${registro.doctor}</td>
-                        <td>${registro.monto_total}</td>
-                        <td>${registro.monto_cuenta}</td>
-                        <td>${registro.saldo}</td>
-                        <td>${registro.estado_pago}</td>
-                    `;
-                    tbody.appendChild(row);
-                });
+                        <td>${registro.numero_sobre || '-'}</td>
+                        <td>${registro.numero_pedido || '-'}</td>
+                        <td>${registro.cliente || '-'}</td>
+                        <td>${registro.fecha_cancelacion || '-'}</td>
+                        <td>${registro.tienda || '-'}</td>
+                        <td>${registro.proveedor || '-'}</td>
+                        <td>${registro.modelo || '-'}</td>
+                        <td>${registro.armazon || '-'}</td>
+                        <td>${registro.doctor || '-'}</td>
+                        <td>${registro.monto_total || 0}</td>
+                        <td>${registro.monto_cuenta || 0}</td>
+                        <td>${registro.saldo || 0}</td>
+                        <td>${registro.estado_pago || '-'}</td>
+                    </tr>
+                `).join('') : '<tr><td colspan="14" class="text-center">No hay resultados</td></tr>';
             } catch (error) {
                 console.error("Error al buscar registros:", error);
+                document.getElementById("resultadosBody").innerHTML = '<tr><td colspan="14" class="text-center">Error al cargar datos</td></tr>';
             }
         }
 
-        // Añadir eventos a los inputs para buscar mientras se escribe
-        // Añadir eventos con debounce para los campos de texto
         const debouncedBuscarRegistros = debounce(buscarRegistros, 300);
         document.getElementById("numeroSobre").addEventListener("input", debouncedBuscarRegistros);
         document.getElementById("numeroPedido").addEventListener("input", debouncedBuscarRegistros);
@@ -142,7 +133,6 @@
         document.getElementById("fechaInicio").addEventListener("change", buscarRegistros);
         document.getElementById("fechaFin").addEventListener("change", buscarRegistros);
 
-        // Ejecutar búsqueda inicial para mostrar todos los registros
         buscarRegistros();
     </script>
 </body>
